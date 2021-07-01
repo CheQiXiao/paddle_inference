@@ -1,10 +1,9 @@
 .. _cn_doc_train_eval_predict:
 
-训练与预测
+训练与预测验证
 =====================
 
 在完成数据预处理，数据加载与模型的组建后，你就可以进行模型的训练与预测了。飞桨主框架提供了两种训练与预测的方法，一种是用\ ``paddle.Model``\ 对模型进行封装，通过高层API如\ ``Model.fit()、Model.evaluate()、Model.predict()``\ 等完成模型的训练与预测；另一种就是基于基础API常规的训练方式。
-其中预测方法除以上两种外，还可采用原生推理库paddle inference 进行预测，该方法支持TeansorRT加速，支持第三方框架模型，支持量化、裁剪后的模型，适合于工业部署或对推理性能、通用性有要求的用户。
 
 .. note::
 
@@ -138,13 +137,16 @@ numpy_ndarray_n是对应原始数据经过模型计算后得到的预测数据�
 
 除了通过第一部分的高层API实现模型的训练与预测，飞桨框架也同样支持通过基础API对模型进行训练与预测。简单来说，\ ``Model.prepare()、Model.fit()、Model.evaluate()、Model.predict()``\ 都是由基础API封装而来。下面通过拆解高层API到基础API的方式，来了解如何用基础API完成模型的训练与预测。
 
-对于网络模型的创建你依旧可以选择Sequential组网方式，也可以采用SubClass组网方式，为方便后续使用paddle inference进行预测，我们使用SubClass组网方式创建网络，若后续使用paddle inference预测，需通过paddle.jit.save保存适用于预测部署的模型，并在forward函数前加@paddle.jit.to_static装饰器，将函数内的动态图API转化为静态图API。
+
+.. note::
+
+    对于网络模型的创建你依旧可以选择Sequential组网方式，也可以采用SubClass组网方式，为方便后续使用paddle inference进行预测，我们使用SubClass组网方式创建网络，若后续使用paddle inference预测，需通过paddle.jit.save保存适用于预测部署的模型，并在forward函数前加@paddle.jit.to_static装饰器，将函数内的动态图API转化为静态图API。
 
 .. code:: ipython3
 
     # 定义网络结构( 采用SubClass 组网 )
     class Mnist(paddle.nn.Layer):
-        def __init__(self)(self):
+        def __init__(self):
             super(Mnist, self).__init__()
             self.flatten = paddle.nn.Flatten()
             self.linear_1 = paddle.nn.Linear(784, 512)
@@ -152,7 +154,8 @@ numpy_ndarray_n是对应原始数据经过模型计算后得到的预测数据�
             self.relu = paddle.nn.ReLU()
             self.dropout = paddle.nn.Dropout(0.2)
        
-        #@paddle.jit.to_static       
+        #后续若不使用paddle inferece，可对 @paddle.jit.to_static 进行注释  
+        @paddle.jit.to_static       
         def forward(self, inputs):
             y = self.flatten(inputs)
             y = self.linear_1(y)
@@ -212,8 +215,8 @@ numpy_ndarray_n是对应原始数据经过模型计算后得到的预测数据�
             # 梯度清零
             optim.clear_grad()
     ##保存模型，会生成*.pdmodel、*.pdiparams、*.pdiparams.info三个模型文件
-    #path='./inference_model'
-    #paddle.jit.save(layer=mnist,path=path)
+    path='./mnist/inference_model'
+    paddle.jit.save(layer=mnist,path=path)
 
 
 .. parsed-literal::
@@ -281,6 +284,12 @@ numpy_ndarray_n是对应原始数据经过模型计算后得到的预测数据�
 .. parsed-literal::
 
     predict finished
+    
+
+部署预测模型
+=====================
+其中预测方法除以上两种外，还可采用原生推理库paddle inference 进行推理部署，该方法支持TeansorRT加速，支持第三方框架模型，支持量化、裁剪后的模型，适合于工业部署或对推理性能、通用性有要求的用户。
+
  
 四、通过paddle inference实现预测
 -----------------------------------------
@@ -325,7 +334,7 @@ paddle inference 适合于工业部署或对推理性能、通用性有要求的
         input_names = predictor.get_input_names()
         input_handle = predictor.get_input_handle(input_names[0])
 
-        # 设置输入，自定义一张输入照片
+        # 设置输入，自定义一张输入照片，图片大小为28*28
         im=Image.open('./img3.png').convert('L')
         im=np.array(im).reshape(1,1,28,28).astype(np.float32)
 
@@ -360,7 +369,8 @@ paddle inference 适合于工业部署或对推理性能、通用性有要求的
 
 .. code:: ipython3
 
-    python python_demo.py --model_file ./test_model.pdmodel --params_file ./test_model.pdiparams
+    python python_demo.py --model_file ./mnist/inference_model.pdmodel --params_file ./mnist/inference_model.pdiparams --batch_size 2
+
     
 .. parsed-literal::
     
