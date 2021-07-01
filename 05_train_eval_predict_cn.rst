@@ -8,7 +8,7 @@
 
 .. note::
 
-    高层API实现的模型训练与预测如\ ``Model.fit()、Model.evaluate()、Model.predict()``\ 都可以通过基础API实现，本文先介绍高层API的训练方式，然后会将高层API拆解为基础API的方式，方便对比学习。
+    高层API实现的模型训练与预测如\ ``Model.fit()、Model.evaluate()、Model.predict()``\ 都可以通过基础API实现，本文先介绍高层API的训练方式，然后会将高层API拆解为基础API的方式，方便对比学习。最后会补充介绍如何使用paddle inference进行预测。
 
 一、训练前准备
 ---------------------
