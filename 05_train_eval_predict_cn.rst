@@ -369,7 +369,7 @@ paddle inference 适合于工业部署或对推理性能、通用性有要求的
 
 .. code:: ipython3
 
-    python_demo.py --model_file ./mnist/inference_model.pdmodel --params_file ./mnist/inference_model.pdiparams --batch_size 2
+   python python_demo.py --model_file ./mnist/inference_model.pdmodel --params_file ./mnist/inference_model.pdiparams --batch_size 2
 
 .. parsed-literal::
     
