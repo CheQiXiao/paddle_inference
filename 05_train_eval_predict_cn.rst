@@ -337,9 +337,6 @@ paddle inference 适合于工业部署或对推理性能、通用性有要求的
         # 设置输入，自定义一张输入照片，图片大小为28*28
         im=Image.open('./img3.png').convert('L')
         im=np.array(im).reshape(1,1,28,28).astype(np.float32)
-
-        print("im shape is {}".format(im.shape))
-        print("im type is {}".format(type(im)))
         input_handle.copy_from_cpu(im)
 
         # 运行predictor
@@ -348,10 +345,12 @@ paddle inference 适合于工业部署或对推理性能、通用性有要求的
         # 获取输出
         output_names = predictor.get_output_names()
         output_handle = predictor.get_output_handle(output_names[0])
-        output_data = output_handle.copy_to_cpu() # numpy.ndarray类型
+        output_data = output_handle.copy_to_cpu() # numpy.ndarray类型，是10个分类的概率
         print(output_data)
         print("Output data size is {}".format(output_data.size))
         print("Output data shape is {}".format(output_data.shape))
+        pred=np.argmax(output_data) #选出概率最大的一个
+        print("The predicted data is ： {}".format(pred.item()))
 
     def parse_args():
         parser = argparse.ArgumentParser()
@@ -379,6 +378,7 @@ paddle inference 适合于工业部署或对推理性能、通用性有要求的
       -2631.2185   -701.50323 -1094.3896    206.71666]]
     Output data size is 10
     Output data shape is (1, 10)
+    The predicted data is ： 3
     
 详细教程可参照paddle inference文档：https://paddle-inference.readthedocs.io/en/latest/quick_start/python_demo.html
 
