@@ -294,11 +294,11 @@ numpy_ndarray_n是对应原始数据经过模型计算后得到的预测数据�
 四、通过paddle inference实现预测
 -----------------------------------------
 
-paddle inference 适合于工业部署或对推理性能、通用性有要求的用户，与model.predict()以及基础API的预测相比，可使用MKLDNN、CUDNN、TensorRT进行预测加速，同时支持用 X2Paddle 工具从第三方框架（TensorFlow、Pytorh 、 Caffe 等）产出的模型，可联动PaddleSlim，支持加载量化、裁剪和蒸馏后的模型部署。针对不同平台不同的应用场景进行了深度的适配优化，保证模型在服务器端即训即用，快速部署。在这里，我们只简单的展示如何用paddle inference实现该模型的预测。
+paddle inference 适合于工业部署或对推理性能、通用性有要求的用户，与model.predict()以及基础API的预测相比，可使用MKLDNN、CUDNN、TensorRT进行预测加速，同时支持用 X2Paddle 工具从第三方框架（TensorFlow、Pytorh 、 Caffe 等）产出的模型，可联动PaddleSlim，支持加载量化、裁剪和蒸馏后的模型部署。针对不同平台不同的应用场景进行了深度的适配优化，保证模型在服务器端即训即用，快速部署。在这里，我们只简单的展示如何用paddle inference实现该模型的部署预测。
 
 4.1 准备预测部署模型
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-要使用paddle inference预测需得到paddle预测格式的模型，所以你需要在训练过程中通过 paddle.jit.save(layer=mnist,path=path) 来保存模型，注意在训练时在forward函数前加@paddle.jit.to_static装饰器，将函数内的动态图API转化为静态图API。你也可以直接点击此链接下载训练好的模型。
+要使用paddle inference预测需得到paddle预测格式的模型，所以你需要在训练过程中通过 paddle.jit.save(layer=mnist,path=path) 来保存模型，注意在训练时在forward函数前加@paddle.jit.to_static装饰器，将函数内的动态图API转化为静态图API。在第三章节基础API模型的训练中已加入相关配置。
 
 .. code:: ipython3
 
@@ -373,7 +373,7 @@ paddle inference 适合于工业部署或对推理性能、通用性有要求的
 
 .. parsed-literal::
     
-    #输出如下（此处需要改动）
+    #输出如下
     
     [[-1347.5923  -1156.918    -774.73865  3387.0623  -1553.3696    107.96879
       -2631.2185   -701.50323 -1094.3896    206.71666]]
